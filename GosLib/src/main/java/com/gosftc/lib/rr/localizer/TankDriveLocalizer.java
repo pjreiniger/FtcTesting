@@ -21,7 +21,7 @@ import java.util.List;
 public class TankDriveLocalizer implements Localizer {
     private static final TankDriveParams PARAMS = new TankDriveParams();
 
-    public final List<Encoder> leftEncs, rightEncs;
+    private final List<Encoder> leftEncs, rightEncs;
     private double lastLeftPos, lastRightPos;
     private boolean initialized;
 
