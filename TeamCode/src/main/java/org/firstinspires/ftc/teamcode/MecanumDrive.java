@@ -169,10 +169,10 @@ public final class MecanumDrive {
 
         return new DriveView(
                 DriveType.MECANUM,
-                MecanumDrive.PARAMS.inPerTick,
-                MecanumDrive.PARAMS.maxWheelVel,
-                MecanumDrive.PARAMS.minProfileAccel,
-                MecanumDrive.PARAMS.maxProfileAccel,
+                PARAMS.inPerTick,
+                PARAMS.maxWheelVel,
+                PARAMS.minProfileAccel,
+                PARAMS.maxProfileAccel,
                 hardwareMap.getAll(LynxModule.class),
                 m_drive.getLeftMotors(),
                 m_drive.getRightMotors(),
@@ -182,9 +182,9 @@ public final class MecanumDrive {
                 localizer.getPerpEncoders(),
                 lazyImu,
                 voltageSensor,
-                () -> new MotorFeedforward(MecanumDrive.PARAMS.kS,
-                        MecanumDrive.PARAMS.kV / MecanumDrive.PARAMS.inPerTick,
-                        MecanumDrive.PARAMS.kA / MecanumDrive.PARAMS.inPerTick)
+                () -> new MotorFeedforward(PARAMS.kS,
+                        PARAMS.kV / PARAMS.inPerTick,
+                        PARAMS.kA / PARAMS.inPerTick)
         );
     }
 }
