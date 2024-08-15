@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tuning;
+package org.firstinspires.ftc.teamcode.opmodes.rr.tank;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.reflection.ReflectionConfig;
@@ -17,19 +17,20 @@ import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegistrar;
 
 import org.firstinspires.ftc.robotcore.internal.opmode.OpModeMeta;
+import org.firstinspires.ftc.teamcode.opmodes.rr.mecanum.MecanumLocalizationTest;
+import org.firstinspires.ftc.teamcode.opmodes.rr.mecanum.MecanumManualFeedbackTuner;
+import org.firstinspires.ftc.teamcode.opmodes.rr.mecanum.MecanumSplineTest;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumChassis;
 import org.firstinspires.ftc.teamcode.subsystems.TankDriveChassis;
 
 import java.util.Arrays;
 
-public final class TuningOpModes {
-    // TODO: change this to TankDrive.class if you're using tank
-    public static final Class<?> DRIVE_CLASS = MecanumChassis.class;
-
+public final class TankOpModeRegistrar {
     public static final String GROUP = "quickstart";
-    public static final boolean DISABLED = false;
+    public static final boolean DISABLED = true;
 
-    private TuningOpModes() {}
+    private TankOpModeRegistrar() {
+    }
 
     private static OpModeMeta metaForClass(Class<? extends OpMode> cls) {
         return new OpModeMeta.Builder()
@@ -43,20 +44,10 @@ public final class TuningOpModes {
     public static void register(OpModeManager manager) {
         if (DISABLED) return;
 
-        DriveViewFactory dvf;
-        if (DRIVE_CLASS.equals(MecanumChassis.class)) {
-            dvf = hardwareMap -> {
-                MecanumChassis md = new MecanumChassis(hardwareMap, new Pose2d(0, 0, 0));
-                return md.toDriveView(hardwareMap);
-            };
-        } else if (DRIVE_CLASS.equals(TankDriveChassis.class)) {
-            dvf = hardwareMap -> {
-                TankDriveChassis td = new TankDriveChassis(hardwareMap, new Pose2d(0, 0, 0));
-                return td.toDriveView(hardwareMap);
-            };
-        } else {
-            throw new RuntimeException();
-        }
+        DriveViewFactory dvf = hardwareMap -> {
+            TankDriveChassis td = new TankDriveChassis(hardwareMap, new Pose2d(0, 0, 0));
+            return td.toDriveView(hardwareMap);
+        };
 
         manager.register(metaForClass(AngularRampLogger.class), new AngularRampLogger(dvf));
         manager.register(metaForClass(ForwardPushTest.class), new ForwardPushTest(dvf));
@@ -67,9 +58,9 @@ public final class TuningOpModes {
         manager.register(metaForClass(MecanumMotorDirectionDebugger.class), new MecanumMotorDirectionDebugger(dvf));
         manager.register(metaForClass(DeadWheelDirectionDebugger.class), new DeadWheelDirectionDebugger(dvf));
 
-        manager.register(metaForClass(ManualFeedbackTuner.class), ManualFeedbackTuner.class);
-        manager.register(metaForClass(SplineTest.class), SplineTest.class);
-        manager.register(metaForClass(LocalizationTest.class), LocalizationTest.class);
+        manager.register(metaForClass(TankManualFeedbackTuner.class), TankManualFeedbackTuner.class);
+        manager.register(metaForClass(TankSplineTest.class), TankSplineTest.class);
+        manager.register(metaForClass(TankLocalizationTest.class), TankLocalizationTest.class);
 
         FtcDashboard.getInstance().withConfigRoot(configRoot -> {
             for (Class<?> c : Arrays.asList(
@@ -78,7 +69,7 @@ public final class TuningOpModes {
                     LateralRampLogger.class,
                     ManualFeedforwardTuner.class,
                     MecanumMotorDirectionDebugger.class,
-                    ManualFeedbackTuner.class
+                    TankManualFeedbackTuner.class
             )) {
                 configRoot.putVariable(c.getSimpleName(), ReflectionConfig.createVariableFromClass(c));
             }
