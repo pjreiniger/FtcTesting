@@ -16,7 +16,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,10 +30,12 @@ public class MecanumDrive {
     private final Encoder m_blEncoder;
     private final Encoder m_brEncoder;
 
-    private final DownsampledWriter m_targetPoseWriter = new DownsampledWriter("TARGET_POSE", 50_000_000);
-    private final DownsampledWriter m_driveCommandWriter = new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
-    private final DownsampledWriter m_mecanumCommandWriter = new DownsampledWriter("MECANUM_COMMAND", 50_000_000);
-
+    private final DownsampledWriter m_targetPoseWriter =
+            new DownsampledWriter("TARGET_POSE", 50_000_000);
+    private final DownsampledWriter m_driveCommandWriter =
+            new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
+    private final DownsampledWriter m_mecanumCommandWriter =
+            new DownsampledWriter("MECANUM_COMMAND", 50_000_000);
 
     public MecanumDrive(HardwareMap hardwareMap) {
         m_flMotor = hardwareMap.get(DcMotorEx.class, "leftFront");
@@ -72,15 +73,14 @@ public class MecanumDrive {
     }
 
     public void setDrivePowers(PoseVelocity2d powers) {
-        MecanumKinematics.WheelVelocities<Time> wheelVels = new MecanumKinematics(1).inverse(
-                PoseVelocity2dDual.constant(powers, 1));
+        MecanumKinematics.WheelVelocities<Time> wheelVels =
+                new MecanumKinematics(1).inverse(PoseVelocity2dDual.constant(powers, 1));
 
         setDrivePower(
                 wheelVels.leftFront.get(0),
                 wheelVels.rightFront.get(0),
                 wheelVels.leftBack.get(0),
-                wheelVels.rightBack.get(0)
-        );
+                wheelVels.rightBack.get(0));
     }
 
     public void publishDriveCommand(DriveCommandMessage driveCommandMessage) {
@@ -96,20 +96,15 @@ public class MecanumDrive {
     }
 
     public MecanumDriveLocalizer createOdometryLocalizer(MecanumKinematics m_kinematics, IMU imu) {
-        return new MecanumDriveLocalizer(m_kinematics, m_flEncoder, m_frEncoder, m_blEncoder, m_brEncoder, imu);
+        return new MecanumDriveLocalizer(
+                m_kinematics, m_flEncoder, m_frEncoder, m_blEncoder, m_brEncoder, imu);
     }
 
     public List<DcMotorEx> getLeftMotors() {
-        return Arrays.asList(
-                m_flMotor,
-                m_blMotor
-        );
+        return Arrays.asList(m_flMotor, m_blMotor);
     }
 
     public List<DcMotorEx> getRightMotors() {
-        return Arrays.asList(
-                m_frMotor,
-                m_brMotor
-        );
+        return Arrays.asList(m_frMotor, m_brMotor);
     }
 }

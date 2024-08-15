@@ -9,6 +9,8 @@ spotless {
             exclude '**/build/**', '**/build-*/**', 'bazel-*/**', '**/venv/**'
         }
         toggleOffOn()
+        googleJavaFormat()
+        indentWithTabs(2)
         indentWithSpaces(4)
         removeUnusedImports()
         trimTrailingWhitespace()

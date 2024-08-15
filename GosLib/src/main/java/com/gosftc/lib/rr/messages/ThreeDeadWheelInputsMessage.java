@@ -8,7 +8,8 @@ public final class ThreeDeadWheelInputsMessage {
     public PositionVelocityPair par1;
     public PositionVelocityPair perp;
 
-    public ThreeDeadWheelInputsMessage(PositionVelocityPair par0, PositionVelocityPair par1, PositionVelocityPair perp) {
+    public ThreeDeadWheelInputsMessage(
+            PositionVelocityPair par0, PositionVelocityPair par1, PositionVelocityPair perp) {
         this.timestamp = System.nanoTime();
         this.par0 = par0;
         this.par1 = par1;

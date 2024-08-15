@@ -1,7 +1,6 @@
 package com.gosftc.lib.rr.messages;
 
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
@@ -15,7 +14,12 @@ public final class MecanumLocalizerInputsMessage {
     public double pitch;
     public double roll;
 
-    public MecanumLocalizerInputsMessage(PositionVelocityPair leftFront, PositionVelocityPair leftBack, PositionVelocityPair rightBack, PositionVelocityPair rightFront, YawPitchRollAngles angles) {
+    public MecanumLocalizerInputsMessage(
+            PositionVelocityPair leftFront,
+            PositionVelocityPair leftBack,
+            PositionVelocityPair rightBack,
+            PositionVelocityPair rightFront,
+            YawPitchRollAngles angles) {
         this.timestamp = System.nanoTime();
         this.leftFront = leftFront;
         this.leftBack = leftBack;
