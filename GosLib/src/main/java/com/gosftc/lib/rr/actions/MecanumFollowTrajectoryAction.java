@@ -20,14 +20,14 @@ import com.gosftc.lib.rr.localizer.Pose2dState;
 import com.gosftc.lib.rr.messages.DriveCommandMessage;
 import com.gosftc.lib.rr.messages.MecanumCommandMessage;
 import com.gosftc.lib.rr.messages.PoseMessage;
-import com.gosftc.lib.rr.temp.MecanumParams;
+import com.gosftc.lib.rr.temp.MecanumDriveParams;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import java.util.List;
 import java.util.function.Supplier;
 
 public final class MecanumFollowTrajectoryAction implements Action {
 
-    private static final MecanumParams PARAMS = new MecanumParams();
+    private static final MecanumDriveParams PARAMS = new MecanumDriveParams();
 
     private final TimeTrajectory m_timeTrajectory;
 

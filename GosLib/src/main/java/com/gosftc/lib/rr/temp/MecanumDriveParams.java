@@ -2,7 +2,7 @@ package com.gosftc.lib.rr.temp;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
-public class MecanumParams {
+public class MecanumDriveParams {
     // IMU orientation
     // TODO: fill in these values based on
     //   see

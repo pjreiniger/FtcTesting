@@ -11,7 +11,7 @@ import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.gosftc.lib.rr.messages.MecanumLocalizerInputsMessage;
-import com.gosftc.lib.rr.temp.MecanumParams;
+import com.gosftc.lib.rr.temp.MecanumDriveParams;
 import com.qualcomm.robotcore.hardware.IMU;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 public class MecanumDriveLocalizer implements Localizer {
-    private static final MecanumParams PARAMS = new MecanumParams();
+    private static final MecanumDriveParams PARAMS = new MecanumDriveParams();
 
     private final Encoder m_flEncoder;
     private final Encoder m_frEncoder;

@@ -34,17 +34,13 @@ import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.DriveType;
 import com.acmerobotics.roadrunner.ftc.DriveView;
-import com.acmerobotics.roadrunner.ftc.Encoder;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
-import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
-import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
-import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.gosftc.lib.rr.Drawing;
 import com.gosftc.lib.rr.localizer.Localizer;
 import com.gosftc.lib.rr.localizer.TankDriveLocalizer;
-import com.gosftc.lib.rr.temp.Params;
+import com.gosftc.lib.rr.temp.TankDriveParams;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -55,18 +51,15 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.gosftc.lib.rr.messages.DriveCommandMessage;
 import com.gosftc.lib.rr.messages.PoseMessage;
 import com.gosftc.lib.rr.messages.TankCommandMessage;
-import com.gosftc.lib.rr.messages.TankLocalizerInputsMessage;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 @Config
 public final class TankDrive {
 
-    public static Params PARAMS = new Params();
+    public static TankDriveParams PARAMS = new TankDriveParams();
 
     public final TankKinematics kinematics = new TankKinematics(PARAMS.inPerTick * PARAMS.trackWidthTicks);
 

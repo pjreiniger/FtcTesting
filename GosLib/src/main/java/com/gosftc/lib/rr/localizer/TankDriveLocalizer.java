@@ -12,14 +12,14 @@ import com.acmerobotics.roadrunner.ftc.OverflowEncoder;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.gosftc.lib.rr.messages.TankLocalizerInputsMessage;
-import com.gosftc.lib.rr.temp.Params;
+import com.gosftc.lib.rr.temp.TankDriveParams;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class TankDriveLocalizer implements Localizer {
-    private static final Params PARAMS = new Params();
+    private static final TankDriveParams PARAMS = new TankDriveParams();
 
     public final List<Encoder> leftEncs, rightEncs;
     private double lastLeftPos, lastRightPos;
