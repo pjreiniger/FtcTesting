@@ -21,6 +21,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import com.gosftc.lib.rr.messages.TwoDeadWheelInputsMessage;
 
+import java.util.Collections;
+import java.util.List;
+
 @Config
 public final class TwoDeadWheelLocalizer implements Localizer {
     public static class Params {
@@ -116,5 +119,25 @@ public final class TwoDeadWheelLocalizer implements Localizer {
         lastHeading = heading;
 
         return twist;
+    }
+
+    @Override
+    public List<Encoder> getLeftEncoders() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Encoder> getRightEncoders() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<Encoder> getParEncoders() {
+        return Collections.singletonList(par);
+    }
+
+    @Override
+    public List<Encoder> getPerpEncoders() {
+        return Collections.singletonList(perp);
     }
 }

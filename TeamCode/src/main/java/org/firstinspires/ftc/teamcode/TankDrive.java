@@ -211,6 +211,22 @@ public final class TankDrive {
 
             return kinematics.forward(twist);
         }
+
+        public List<Encoder> getLeftEncoders() {
+            return leftEncs;
+        }
+
+        public List<Encoder> getRightEncoders() {
+            return rightEncs;
+        }
+
+        public List<Encoder> getParEncoders() {
+            return Collections.emptyList();
+        }
+
+        public List<Encoder> getPerpEncoders() {
+            return Collections.emptyList();
+        }
     }
 
     public TankDrive(HardwareMap hardwareMap, Pose2d pose) {

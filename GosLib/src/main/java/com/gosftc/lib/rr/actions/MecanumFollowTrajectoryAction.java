@@ -13,6 +13,8 @@ import com.acmerobotics.roadrunner.PoseVelocity2dDual;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.TimeTrajectory;
 import com.gosftc.lib.rr.Drawing;
+import com.gosftc.lib.rr.drive.MecanumDrive;
+import com.gosftc.lib.rr.localizer.Pose2dState;
 import com.gosftc.lib.rr.temp.MecanumParams;
 
 import com.acmerobotics.roadrunner.HolonomicController;
@@ -22,68 +24,86 @@ import com.acmerobotics.roadrunner.MotorFeedforward;
 import com.gosftc.lib.rr.messages.DriveCommandMessage;
 import com.gosftc.lib.rr.messages.MecanumCommandMessage;
 import com.gosftc.lib.rr.messages.PoseMessage;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import java.lang.Math;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public final class MecanumFollowTrajectoryAction implements Action {
 
     private static final MecanumParams PARAMS = new MecanumParams();
 
-        public final TimeTrajectory timeTrajectory;
-        private double beginTs = -1;
+        public final TimeTrajectory m_timeTrajectory;
 
-        private final double[] xPoints, yPoints;
+        private final MecanumDrive m_drivetrain;
+        private final MecanumKinematics m_kinematics;
+        private final VoltageSensor m_voltageSensor;
+        private final Supplier<Pose2dState> m_poseStateSupplier;
 
-        public MecanumFollowTrajectoryAction(TimeTrajectory t) {
-            timeTrajectory = t;
+    private double m_beginTs = -1;
+
+    private final double[] m_xPoints;
+    private final double[] m_yPoints;
+
+        public MecanumFollowTrajectoryAction(
+                TimeTrajectory t,
+                MecanumDrive drive,
+                MecanumKinematics kinematics,
+                VoltageSensor voltageSensor,
+                Supplier<Pose2dState> poseStateSupplier) {
+            m_timeTrajectory = t;
+
+
+            m_drivetrain = drive;
+            m_kinematics = kinematics;
+            m_voltageSensor = voltageSensor;
+            m_poseStateSupplier = poseStateSupplier;
 
             List<Double> disps = com.acmerobotics.roadrunner.Math.range(
                     0, t.path.length(),
                     Math.max(2, (int) Math.ceil(t.path.length() / 2)));
-            xPoints = new double[disps.size()];
-            yPoints = new double[disps.size()];
+            m_xPoints = new double[disps.size()];
+            m_yPoints = new double[disps.size()];
             for (int i = 0; i < disps.size(); i++) {
                 Pose2d p = t.path.get(disps.get(i), 1).value();
-                xPoints[i] = p.position.x;
-                yPoints[i] = p.position.y;
+                m_xPoints[i] = p.position.x;
+                m_yPoints[i] = p.position.y;
             }
         }
 
         @Override
         public boolean run(@NonNull TelemetryPacket p) {
             double t;
-            if (beginTs < 0) {
-                beginTs = Actions.now();
+            if (m_beginTs < 0) {
+                m_beginTs = Actions.now();
                 t = 0;
             } else {
-                t = Actions.now() - beginTs;
+                t = Actions.now() - m_beginTs;
             }
 
-            if (t >= timeTrajectory.duration) {
-                leftFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-                rightFront.setPower(0);
-
+            if (t >= m_timeTrajectory.duration) {
+                m_drivetrain.stop();
                 return false;
             }
 
-            Pose2dDual<Time> txWorldTarget = timeTrajectory.get(t);
-            targetPoseWriter.write(new PoseMessage(txWorldTarget.value()));
+            Pose2dDual<Time> txWorldTarget = m_timeTrajectory.get(t);
+            m_drivetrain.publishTargetPose(new PoseMessage(txWorldTarget.value()));
 
-            PoseVelocity2d robotVelRobot = updatePoseEstimate();
+            Pose2dState state = m_poseStateSupplier.get();
+            Pose2d pose = state.m_pose;
+            PoseVelocity2d robotVelRobot = state.m_velocity;
 
             PoseVelocity2dDual<Time> command = new HolonomicController(
                     PARAMS.axialGain, PARAMS.lateralGain, PARAMS.headingGain,
                     PARAMS.axialVelGain, PARAMS.lateralVelGain, PARAMS.headingVelGain
             )
                     .compute(txWorldTarget, pose, robotVelRobot);
-            driveCommandWriter.write(new DriveCommandMessage(command));
+            m_drivetrain.publishDriveCommand(new DriveCommandMessage(command));
 
-            MecanumKinematics.WheelVelocities<Time> wheelVels = kinematics.inverse(command);
-            double voltage = voltageSensor.getVoltage();
+            MecanumKinematics.WheelVelocities<Time> wheelVels = m_kinematics.inverse(command);
+            double voltage = m_voltageSensor.getVoltage();
 
             final MotorFeedforward feedforward = new MotorFeedforward(PARAMS.kS,
                     PARAMS.kV / PARAMS.inPerTick, PARAMS.kA / PARAMS.inPerTick);
@@ -91,14 +111,16 @@ public final class MecanumFollowTrajectoryAction implements Action {
             double leftBackPower = feedforward.compute(wheelVels.leftBack) / voltage;
             double rightBackPower = feedforward.compute(wheelVels.rightBack) / voltage;
             double rightFrontPower = feedforward.compute(wheelVels.rightFront) / voltage;
-            mecanumCommandWriter.write(new MecanumCommandMessage(
+            m_drivetrain.publishMecanumCommand(new MecanumCommandMessage(
                     voltage, leftFrontPower, leftBackPower, rightBackPower, rightFrontPower
             ));
 
-            leftFront.setPower(leftFrontPower);
-            leftBack.setPower(leftBackPower);
-            rightBack.setPower(rightBackPower);
-            rightFront.setPower(rightFrontPower);
+            m_drivetrain.setDrivePower(
+                    leftFrontPower,
+                    rightFrontPower,
+                    leftBackPower,
+                    rightBackPower
+            );
 
             p.put("x", pose.position.x);
             p.put("y", pose.position.y);
@@ -111,7 +133,7 @@ public final class MecanumFollowTrajectoryAction implements Action {
 
             // only draw when active; only one drive action should be active at a time
             Canvas c = p.fieldOverlay();
-            drawPoseHistory(c);
+            // drawPoseHistory(c); TODO(pj)
 
             c.setStroke("#4CAF50");
             Drawing.drawRobot(c, txWorldTarget.value());
@@ -121,7 +143,7 @@ public final class MecanumFollowTrajectoryAction implements Action {
 
             c.setStroke("#4CAF50FF");
             c.setStrokeWidth(1);
-            c.strokePolyline(xPoints, yPoints);
+            c.strokePolyline(m_xPoints, m_yPoints);
 
             return true;
         }
@@ -130,6 +152,6 @@ public final class MecanumFollowTrajectoryAction implements Action {
         public void preview(Canvas c) {
             c.setStroke("#4CAF507A");
             c.setStrokeWidth(1);
-            c.strokePolyline(xPoints, yPoints);
+            c.strokePolyline(m_xPoints, m_yPoints);
         }
     }
