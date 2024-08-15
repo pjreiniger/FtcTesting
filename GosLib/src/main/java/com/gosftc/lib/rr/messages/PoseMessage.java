@@ -2,6 +2,7 @@ package com.gosftc.lib.rr.messages;
 
 import com.acmerobotics.roadrunner.Pose2d;
 
+@SuppressWarnings({"PMD.DataClass", "PMD.FieldNamingConventions"})
 public final class PoseMessage {
     public long timestamp;
     public double x;

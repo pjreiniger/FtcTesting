@@ -2,6 +2,7 @@ package com.gosftc.lib.rr.messages;
 
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 
+@SuppressWarnings({"PMD.DataClass", "PMD.FieldNamingConventions"})
 public final class ThreeDeadWheelInputsMessage {
     public long timestamp;
     public PositionVelocityPair par0;

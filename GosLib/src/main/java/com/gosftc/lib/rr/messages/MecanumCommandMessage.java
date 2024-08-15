@@ -1,5 +1,6 @@
 package com.gosftc.lib.rr.messages;
 
+@SuppressWarnings({"PMD.DataClass", "PMD.FieldNamingConventions"})
 public final class MecanumCommandMessage {
     public long timestamp;
     public double voltage;

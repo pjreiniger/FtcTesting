@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 @Config
-public final class MecanumDrive {
+public final class MecanumChassis {
 
     public static MecanumDriveParams PARAMS = new MecanumDriveParams();
 
@@ -62,14 +62,11 @@ public final class MecanumDrive {
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
     private final DownsampledWriter estimatedPoseWriter = new DownsampledWriter("ESTIMATED_POSE", 50_000_000);
-    private final DownsampledWriter targetPoseWriter = new DownsampledWriter("TARGET_POSE", 50_000_000);
-    private final DownsampledWriter driveCommandWriter = new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
-    private final DownsampledWriter mecanumCommandWriter = new DownsampledWriter("MECANUM_COMMAND", 50_000_000);
 
     private final com.gosftc.lib.rr.drive.MecanumDrive m_drive;
 
 
-    public MecanumDrive(HardwareMap hardwareMap, Pose2d pose) {
+    public MecanumChassis(HardwareMap hardwareMap, Pose2d pose) {
         this.pose = pose;
 
         LynxFirmware.throwIfModulesAreOutdated(hardwareMap);

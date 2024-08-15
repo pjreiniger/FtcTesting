@@ -2,6 +2,7 @@ package com.gosftc.lib.rr.temp;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
+@SuppressWarnings({"PMD.RedundantFieldInitializer", "PMD.FieldNamingConventions"})
 public class TankDriveParams {
     // IMU orientation
     // TODO: fill in these values based on

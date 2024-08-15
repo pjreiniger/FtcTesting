@@ -6,17 +6,6 @@ apply plugin: 'pmd'
 jacoco {
     toolVersion = "0.8.8"
 }
-//jacocoTestReport {
-//    dependsOn test
-//    reports {
-//        xml.enabled true
-//        html.enabled true
-//    }
-//}
-//
-//test {
-//    finalizedBy jacocoTestReport
-//}
 
 
 checkstyle {
@@ -56,8 +45,12 @@ task pmd(type: Pmd) {
     reports {
         xml.enabled = false
         html.enabled = true
-//        html.destination = "$project.buildDir/outputs/pmd/pmd.html"
     }
+}
+
+task javaFormat {
+    dependsOn(tasks.withType(Checkstyle))
+    dependsOn(tasks.withType(Pmd))
 }
 
  apply from: "${rootDir}/styleguide/spotless.gradle"

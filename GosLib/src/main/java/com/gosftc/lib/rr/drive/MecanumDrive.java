@@ -95,9 +95,9 @@ public class MecanumDrive {
         m_targetPoseWriter.write(poseMessage);
     }
 
-    public MecanumDriveLocalizer createOdometryLocalizer(MecanumKinematics m_kinematics, IMU imu) {
+    public MecanumDriveLocalizer createOdometryLocalizer(MecanumKinematics kinematics, IMU imu) {
         return new MecanumDriveLocalizer(
-                m_kinematics, m_flEncoder, m_frEncoder, m_blEncoder, m_brEncoder, imu);
+                kinematics, m_flEncoder, m_frEncoder, m_blEncoder, m_brEncoder, imu);
     }
 
     public List<DcMotorEx> getLeftMotors() {

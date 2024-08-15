@@ -21,9 +21,11 @@ import java.util.List;
 public class TankDriveLocalizer implements Localizer {
     private static final TankDriveParams PARAMS = new TankDriveParams();
 
-    private final List<Encoder> leftEncs, rightEncs;
-    private double lastLeftPos, lastRightPos;
-    private boolean initialized;
+    private final List<Encoder> m_leftEncs;
+    private final List<Encoder> m_rightEncs;
+    private double m_lastLeftPos;
+    private double m_lastRightPos;
+    private boolean m_initialized;
 
     private final TankKinematics m_kinematics;
 
@@ -36,7 +38,7 @@ public class TankDriveLocalizer implements Localizer {
                 Encoder e = new OverflowEncoder(new RawEncoder(m));
                 leftEncs.add(e);
             }
-            this.leftEncs = Collections.unmodifiableList(leftEncs);
+            this.m_leftEncs = Collections.unmodifiableList(leftEncs);
         }
 
         {
@@ -45,7 +47,7 @@ public class TankDriveLocalizer implements Localizer {
                 Encoder e = new OverflowEncoder(new RawEncoder(m));
                 rightEncs.add(e);
             }
-            this.rightEncs = Collections.unmodifiableList(rightEncs);
+            this.m_rightEncs = Collections.unmodifiableList(rightEncs);
         }
 
         // TODO: reverse encoder directions if needed
@@ -58,34 +60,34 @@ public class TankDriveLocalizer implements Localizer {
         List<PositionVelocityPair> rightReadings = new ArrayList<>();
         double meanLeftPos = 0.0;
         double meanLeftVel = 0.0;
-        for (Encoder e : leftEncs) {
+        for (Encoder e : m_leftEncs) {
             PositionVelocityPair p = e.getPositionAndVelocity();
             meanLeftPos += p.position;
             meanLeftVel += p.velocity;
             leftReadings.add(p);
         }
-        meanLeftPos /= leftEncs.size();
-        meanLeftVel /= leftEncs.size();
+        meanLeftPos /= m_leftEncs.size();
+        meanLeftVel /= m_leftEncs.size();
 
         double meanRightPos = 0.0;
         double meanRightVel = 0.0;
-        for (Encoder e : rightEncs) {
+        for (Encoder e : m_rightEncs) {
             PositionVelocityPair p = e.getPositionAndVelocity();
             meanRightPos += p.position;
             meanRightVel += p.velocity;
             rightReadings.add(p);
         }
-        meanRightPos /= rightEncs.size();
-        meanRightVel /= rightEncs.size();
+        meanRightPos /= m_rightEncs.size();
+        meanRightVel /= m_rightEncs.size();
 
         FlightRecorder.write(
                 "TANK_LOCALIZER_INPUTS", new TankLocalizerInputsMessage(leftReadings, rightReadings));
 
-        if (!initialized) {
-            initialized = true;
+        if (!m_initialized) {
+            m_initialized = true;
 
-            lastLeftPos = meanLeftPos;
-            lastRightPos = meanRightPos;
+            m_lastLeftPos = meanLeftPos;
+            m_lastRightPos = meanRightPos;
 
             return new Twist2dDual<>(
                     Vector2dDual.constant(new Vector2d(0.0, 0.0), 2), DualNum.constant(0.0, 2));
@@ -93,26 +95,26 @@ public class TankDriveLocalizer implements Localizer {
 
         TankKinematics.WheelIncrements<Time> twist =
                 new TankKinematics.WheelIncrements<>(
-                        new DualNum<Time>(new double[] {meanLeftPos - lastLeftPos, meanLeftVel})
+                        new DualNum<Time>(new double[] {meanLeftPos - m_lastLeftPos, meanLeftVel})
                                 .times(PARAMS.inPerTick),
                         new DualNum<Time>(
                                         new double[] {
-                                            meanRightPos - lastRightPos, meanRightVel,
+                                            meanRightPos - m_lastRightPos, meanRightVel,
                                         })
                                 .times(PARAMS.inPerTick));
 
-        lastLeftPos = meanLeftPos;
-        lastRightPos = meanRightPos;
+        m_lastLeftPos = meanLeftPos;
+        m_lastRightPos = meanRightPos;
 
         return m_kinematics.forward(twist);
     }
 
     public List<Encoder> getLeftEncoders() {
-        return leftEncs;
+        return m_leftEncs;
     }
 
     public List<Encoder> getRightEncoders() {
-        return rightEncs;
+        return m_rightEncs;
     }
 
     public List<Encoder> getParEncoders() {

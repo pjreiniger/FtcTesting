@@ -20,6 +20,7 @@ import java.util.List;
 
 @Config
 public final class ThreeDeadWheelLocalizer implements Localizer {
+    @SuppressWarnings({"PMD.RedundantFieldInitializer", "PMD.FieldNamingConventions"})
     public static class Params {
         public double par0YTicks = 0.0; // y position of the first parallel encoder (in tick units)
         public double par1YTicks = 1.0; // y position of the second parallel encoder (in tick units)

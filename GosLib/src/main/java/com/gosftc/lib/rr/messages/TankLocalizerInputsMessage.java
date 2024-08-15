@@ -3,6 +3,7 @@ package com.gosftc.lib.rr.messages;
 import com.acmerobotics.roadrunner.ftc.PositionVelocityPair;
 import java.util.List;
 
+@SuppressWarnings({"PMD.DataClass", "PMD.FieldNamingConventions"})
 public final class TankLocalizerInputsMessage {
     public long timestamp;
     public PositionVelocityPair[] left;

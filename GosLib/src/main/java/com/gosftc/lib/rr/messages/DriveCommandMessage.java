@@ -3,6 +3,7 @@ package com.gosftc.lib.rr.messages;
 import com.acmerobotics.roadrunner.PoseVelocity2dDual;
 import com.acmerobotics.roadrunner.Time;
 
+@SuppressWarnings({"PMD.DataClass", "PMD.FieldNamingConventions"})
 public final class DriveCommandMessage {
     public long timestamp;
     public double forwardVelocity;

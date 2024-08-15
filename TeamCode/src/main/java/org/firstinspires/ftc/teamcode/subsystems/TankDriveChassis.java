@@ -1,35 +1,21 @@
-package org.firstinspires.ftc.teamcode;
-
-import androidx.annotation.NonNull;
+package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.AccelConstraint;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Actions;
 import com.acmerobotics.roadrunner.AngularVelConstraint;
-import com.acmerobotics.roadrunner.Arclength;
-import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.MotorFeedforward;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.PoseVelocity2dDual;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.ProfileParams;
-import com.acmerobotics.roadrunner.RamseteController;
 import com.acmerobotics.roadrunner.TankKinematics;
 import com.acmerobotics.roadrunner.Time;
-import com.acmerobotics.roadrunner.TimeTrajectory;
-import com.acmerobotics.roadrunner.TimeTurn;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.TrajectoryBuilderParams;
 import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Twist2dDual;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.Vector2dDual;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.DownsampledWriter;
 import com.acmerobotics.roadrunner.ftc.DriveType;
@@ -37,9 +23,6 @@ import com.acmerobotics.roadrunner.ftc.DriveView;
 import com.acmerobotics.roadrunner.ftc.FlightRecorder;
 import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
-import com.gosftc.lib.rr.Drawing;
-import com.gosftc.lib.rr.actions.MecanumFollowTrajectoryAction;
-import com.gosftc.lib.rr.actions.MecanumTurnAction;
 import com.gosftc.lib.rr.actions.TankFollowTrajectoryAction;
 import com.gosftc.lib.rr.actions.TankTurnAction;
 import com.gosftc.lib.rr.localizer.Localizer;
@@ -48,21 +31,16 @@ import com.gosftc.lib.rr.localizer.TankDriveLocalizer;
 import com.gosftc.lib.rr.temp.TankDriveParams;
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import com.gosftc.lib.rr.messages.DriveCommandMessage;
 import com.gosftc.lib.rr.messages.PoseMessage;
-import com.gosftc.lib.rr.messages.TankCommandMessage;
 
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 @Config
-public final class TankDrive {
+public final class TankDriveChassis {
 
     public static TankDriveParams PARAMS = new TankDriveParams();
 
@@ -92,7 +70,7 @@ public final class TankDrive {
     private final com.gosftc.lib.rr.drive.TankDrive m_drive;
 
 
-    public TankDrive(HardwareMap hardwareMap, Pose2d pose) {
+    public TankDriveChassis(HardwareMap hardwareMap, Pose2d pose) {
         m_drive = new com.gosftc.lib.rr.drive.TankDrive(hardwareMap);
         this.pose = pose;
 

@@ -16,12 +16,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TankDrive {
-    private final DownsampledWriter targetPoseWriter =
+    private final DownsampledWriter m_targetPoseWriter =
             new DownsampledWriter("TARGET_POSE", 50_000_000);
-    private final DownsampledWriter driveCommandWriter =
+    private final DownsampledWriter m_driveCommandWriter =
             new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
 
-    private final DownsampledWriter tankCommandWriter =
+    private final DownsampledWriter m_tankCommandWriter =
             new DownsampledWriter("TANK_COMMAND", 50_000_000);
 
     private final List<DcMotorEx> m_leftMotors;
@@ -70,15 +70,15 @@ public class TankDrive {
     }
 
     public void publishTargetPose(PoseMessage message) {
-        driveCommandWriter.write(message);
+        m_driveCommandWriter.write(message);
     }
 
     public void publishDriveCommand(DriveCommandMessage message) {
-        tankCommandWriter.write(message);
+        m_tankCommandWriter.write(message);
     }
 
     public void publishTankCommand(TankCommandMessage message) {
-        targetPoseWriter.write(message);
+        m_targetPoseWriter.write(message);
     }
 
     public List<DcMotorEx> getLeftMotors() {

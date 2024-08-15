@@ -38,7 +38,8 @@ public final class TankFollowTrajectoryAction implements Action {
 
     private double m_beginTs = -1;
 
-    private final double[] m_xPoints, m_yPoints;
+    private final double[] m_xPoints;
+    private final double[] m_yPoints;
 
     public TankFollowTrajectoryAction(
             TimeTrajectory t,
