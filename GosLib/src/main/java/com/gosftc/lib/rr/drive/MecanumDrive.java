@@ -14,6 +14,7 @@ import com.gosftc.lib.rr.messages.MecanumCommandMessage;
 import com.gosftc.lib.rr.messages.PoseMessage;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import java.util.Arrays;
@@ -37,11 +38,74 @@ public class MecanumDrive {
     private final DownsampledWriter m_mecanumCommandWriter =
             new DownsampledWriter("MECANUM_COMMAND", 50_000_000);
 
-    public MecanumDrive(HardwareMap hardwareMap) {
-        m_flMotor = hardwareMap.get(DcMotorEx.class, "leftFront");
-        m_frMotor = hardwareMap.get(DcMotorEx.class, "rightFront");
-        m_blMotor = hardwareMap.get(DcMotorEx.class, "leftBack");
-        m_brMotor = hardwareMap.get(DcMotorEx.class, "rightBack");
+    public static class Builder {
+        private MotorConfig flConfig;
+        private MotorConfig frConfig;
+        private MotorConfig blConfig;
+        private MotorConfig brConfig;
+
+        public Builder configureFrontLeft(MotorConfig config) {
+            flConfig = config;
+            return this;
+        }
+
+        public Builder configureFrontRight(MotorConfig config) {
+            frConfig = config;
+            return this;
+        }
+
+        public Builder configureBackLeft(MotorConfig config) {
+            blConfig = config;
+            return this;
+        }
+
+        public Builder configureBackRight(MotorConfig config) {
+            brConfig = config;
+            return this;
+        }
+
+        public static class MotorConfig {
+            private String motorName;
+            private boolean inverted;
+
+            public MotorConfig() {}
+
+            public MotorConfig withName(String name) {
+                motorName = name;
+                return this;
+            }
+
+            public MotorConfig withInvert(boolean invert) {
+                this.inverted = invert;
+                return this;
+            }
+        }
+
+        public MecanumDrive build(HardwareMap hardwareMap, MecanumKinematics kinematics) {
+            return new MecanumDrive(hardwareMap, kinematics, flConfig, frConfig, blConfig, brConfig);
+        }
+    }
+
+    private MecanumDrive(
+            HardwareMap hardwareMap,
+            MecanumKinematics kinematics,
+            Builder.MotorConfig flConfig,
+            Builder.MotorConfig frConfig,
+            Builder.MotorConfig blConfig,
+            Builder.MotorConfig brConfig) {
+        m_flMotor = hardwareMap.get(DcMotorEx.class, flConfig.motorName);
+        m_frMotor = hardwareMap.get(DcMotorEx.class, frConfig.motorName);
+        m_blMotor = hardwareMap.get(DcMotorEx.class, blConfig.motorName);
+        m_brMotor = hardwareMap.get(DcMotorEx.class, brConfig.motorName);
+
+        m_flMotor.setDirection(
+                flConfig.inverted ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+        m_frMotor.setDirection(
+                frConfig.inverted ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+        m_blMotor.setDirection(
+                blConfig.inverted ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
+        m_brMotor.setDirection(
+                brConfig.inverted ? DcMotorSimple.Direction.REVERSE : DcMotorSimple.Direction.FORWARD);
 
         m_flMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         m_frMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

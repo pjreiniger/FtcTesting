@@ -21,6 +21,7 @@ import com.acmerobotics.roadrunner.ftc.LazyImu;
 import com.acmerobotics.roadrunner.ftc.LynxFirmware;
 import com.gosftc.lib.rr.actions.MecanumFollowTrajectoryAction;
 import com.gosftc.lib.rr.actions.MecanumTurnAction;
+import com.gosftc.lib.rr.drive.MecanumDrive;
 import com.gosftc.lib.rr.localizer.Localizer;
 import com.gosftc.lib.rr.localizer.Pose2dState;
 import com.gosftc.lib.rr.temp.MecanumDriveParams;
@@ -75,7 +76,12 @@ public final class MecanumChassis {
             module.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
 
-        m_drive = new com.gosftc.lib.rr.drive.MecanumDrive(hardwareMap);
+        m_drive = new MecanumDrive.Builder().
+                configureFrontLeft(new MecanumDrive.Builder.MotorConfig().withName("leftFront").withInvert(false))
+                .configureFrontRight(new MecanumDrive.Builder.MotorConfig().withName("rightFront").withInvert(false))
+                .configureBackLeft(new MecanumDrive.Builder.MotorConfig().withName("leftBack").withInvert(false))
+                .configureBackRight(new MecanumDrive.Builder.MotorConfig().withName("rightBack").withInvert(false))
+                .build(hardwareMap, kinematics);
 
         // TODO: make sure your config has motors with these names (or change them)
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
