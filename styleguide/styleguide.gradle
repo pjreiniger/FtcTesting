@@ -53,4 +53,6 @@ task javaFormat {
     dependsOn(tasks.withType(Pmd))
 }
 
+build.dependsOn(javaFormat)
+
  apply from: "${rootDir}/styleguide/spotless.gradle"
