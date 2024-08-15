@@ -35,7 +35,7 @@ public final class MecanumFollowTrajectoryAction implements Action {
 
     private static final MecanumParams PARAMS = new MecanumParams();
 
-        public final TimeTrajectory m_timeTrajectory;
+        private final TimeTrajectory m_timeTrajectory;
 
         private final MecanumDrive m_drivetrain;
         private final MecanumKinematics m_kinematics;

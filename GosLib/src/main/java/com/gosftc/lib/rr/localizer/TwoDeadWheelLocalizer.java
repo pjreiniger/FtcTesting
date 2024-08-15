@@ -31,42 +31,45 @@ public final class TwoDeadWheelLocalizer implements Localizer {
         public double perpXTicks = 0.0; // x position of the perpendicular encoder (in tick units)
     }
 
-    public static Params PARAMS = new Params();
+    public final static Params PARAMS = new Params();
 
-    public final Encoder par, perp;
-    public final IMU imu;
+    private final Encoder m_par;
+    private final Encoder m_perp;
+    private final IMU m_imu;
 
-    private int lastParPos, lastPerpPos;
-    private Rotation2d lastHeading;
+    private int m_lastParPos;
+    private int m_lastPerpPos;
+    private Rotation2d m_lastHeading;
 
-    private final double inPerTick;
+    private final double m_inPerTick;
 
-    private double lastRawHeadingVel, headingVelOffset;
-    private boolean initialized;
+    private double m_lastRawHeadingVel;
+    private double m_headingVelOffset;
+    private boolean m_initialized;
 
     public TwoDeadWheelLocalizer(HardwareMap hardwareMap, IMU imu, double inPerTick) {
         // TODO: make sure your config has **motors** with these names (or change them)
         //   the encoders should be plugged into the slot matching the named motor
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
-        par = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "par")));
-        perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "perp")));
+        m_par = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "par")));
+        m_perp = new OverflowEncoder(new RawEncoder(hardwareMap.get(DcMotorEx.class, "perp")));
 
         // TODO: reverse encoder directions if needed
         //   par.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        this.imu = imu;
+        this.m_imu = imu;
 
-        this.inPerTick = inPerTick;
+        this.m_inPerTick = inPerTick;
 
         FlightRecorder.write("TWO_DEAD_WHEEL_PARAMS", PARAMS);
     }
 
     public Twist2dDual<Time> update() {
-        PositionVelocityPair parPosVel = par.getPositionAndVelocity();
-        PositionVelocityPair perpPosVel = perp.getPositionAndVelocity();
+        PositionVelocityPair parPosVel = m_par.getPositionAndVelocity();
+        PositionVelocityPair perpPosVel = m_perp.getPositionAndVelocity();
 
-        YawPitchRollAngles angles = imu.getRobotYawPitchRollAngles();
-        AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.RADIANS);
+        YawPitchRollAngles angles = m_imu.getRobotYawPitchRollAngles();
+        AngularVelocity angularVelocity = m_imu.getRobotAngularVelocity(AngleUnit.RADIANS);
 
         FlightRecorder.write("TWO_DEAD_WHEEL_INPUTS", new TwoDeadWheelInputsMessage(parPosVel, perpPosVel, angles, angularVelocity));
 
@@ -74,18 +77,17 @@ public final class TwoDeadWheelLocalizer implements Localizer {
 
         // see https://github.com/FIRST-Tech-Challenge/FtcRobotController/issues/617
         double rawHeadingVel = angularVelocity.zRotationRate;
-        if (Math.abs(rawHeadingVel - lastRawHeadingVel) > Math.PI) {
-            headingVelOffset -= Math.signum(rawHeadingVel) * 2 * Math.PI;
+        if (Math.abs(rawHeadingVel - m_lastRawHeadingVel) > Math.PI) {
+            m_headingVelOffset -= Math.signum(rawHeadingVel) * 2 * Math.PI;
         }
-        lastRawHeadingVel = rawHeadingVel;
-        double headingVel = headingVelOffset + rawHeadingVel;
+        m_lastRawHeadingVel = rawHeadingVel;
 
-        if (!initialized) {
-            initialized = true;
+        if (!m_initialized) {
+            m_initialized = true;
 
-            lastParPos = parPosVel.position;
-            lastPerpPos = perpPosVel.position;
-            lastHeading = heading;
+            m_lastParPos = parPosVel.position;
+            m_lastPerpPos = perpPosVel.position;
+            m_lastHeading = heading;
 
             return new Twist2dDual<>(
                     Vector2dDual.constant(new Vector2d(0.0, 0.0), 2),
@@ -93,20 +95,22 @@ public final class TwoDeadWheelLocalizer implements Localizer {
             );
         }
 
-        int parPosDelta = parPosVel.position - lastParPos;
-        int perpPosDelta = perpPosVel.position - lastPerpPos;
-        double headingDelta = heading.minus(lastHeading);
+        double headingVel = m_headingVelOffset + rawHeadingVel;
+
+        int parPosDelta = parPosVel.position - m_lastParPos;
+        int perpPosDelta = perpPosVel.position - m_lastPerpPos;
+        double headingDelta = heading.minus(m_lastHeading);
 
         Twist2dDual<Time> twist = new Twist2dDual<>(
                 new Vector2dDual<>(
                         new DualNum<Time>(new double[] {
                                 parPosDelta - PARAMS.parYTicks * headingDelta,
                                 parPosVel.velocity - PARAMS.parYTicks * headingVel,
-                        }).times(inPerTick),
+                        }).times(m_inPerTick),
                         new DualNum<Time>(new double[] {
                                 perpPosDelta - PARAMS.perpXTicks * headingDelta,
                                 perpPosVel.velocity - PARAMS.perpXTicks * headingVel,
-                        }).times(inPerTick)
+                        }).times(m_inPerTick)
                 ),
                 new DualNum<>(new double[] {
                         headingDelta,
@@ -114,9 +118,9 @@ public final class TwoDeadWheelLocalizer implements Localizer {
                 })
         );
 
-        lastParPos = parPosVel.position;
-        lastPerpPos = perpPosVel.position;
-        lastHeading = heading;
+        m_lastParPos = parPosVel.position;
+        m_lastPerpPos = perpPosVel.position;
+        m_lastHeading = heading;
 
         return twist;
     }
@@ -133,11 +137,11 @@ public final class TwoDeadWheelLocalizer implements Localizer {
 
     @Override
     public List<Encoder> getParEncoders() {
-        return Collections.singletonList(par);
+        return Collections.singletonList(m_par);
     }
 
     @Override
     public List<Encoder> getPerpEncoders() {
-        return Collections.singletonList(perp);
+        return Collections.singletonList(m_perp);
     }
 }

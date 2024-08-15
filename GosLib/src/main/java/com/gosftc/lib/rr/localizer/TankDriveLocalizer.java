@@ -57,8 +57,10 @@ public class TankDriveLocalizer implements Localizer {
 
         @Override
         public Twist2dDual<Time> update() {
-            List<PositionVelocityPair> leftReadings = new ArrayList<>(), rightReadings = new ArrayList<>();
-            double meanLeftPos = 0.0, meanLeftVel = 0.0;
+            List<PositionVelocityPair> leftReadings = new ArrayList<>();
+            List<PositionVelocityPair> rightReadings = new ArrayList<>();
+            double meanLeftPos = 0.0;
+            double meanLeftVel = 0.0;
             for (Encoder e : leftEncs) {
                 PositionVelocityPair p = e.getPositionAndVelocity();
                 meanLeftPos += p.position;
@@ -68,7 +70,8 @@ public class TankDriveLocalizer implements Localizer {
             meanLeftPos /= leftEncs.size();
             meanLeftVel /= leftEncs.size();
 
-            double meanRightPos = 0.0, meanRightVel = 0.0;
+            double meanRightPos = 0.0;
+            double meanRightVel = 0.0;
             for (Encoder e : rightEncs) {
                 PositionVelocityPair p = e.getPositionAndVelocity();
                 meanRightPos += p.position;
